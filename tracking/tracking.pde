@@ -19,15 +19,11 @@ int numSines = 15; // Number of oscillators to use
 
 
 void setup() {  
-  size(1280, 710);
+  size(1280, 720);
   //background(255);
   //background(0);
 
   mov = new Movie(this, "lava.mov");
-  //mov2 = new Movie(this, "lava.mov");
-
-
-
 
   // Pausing the video at the first frame. 
   mov.play();
@@ -36,14 +32,10 @@ void setup() {
 
   cv = new OpenCV(this, mov.width, mov.height);
 
-  //mov2.play();
-  //mov2.jump(0);
-  //mov2.loop();
-
-  //cv.invert();
-  //cv.threshold(70);     // threshold leaves just the lightest area 
-  //cv.dilate();          // fill holes and smooth edges
-  //cv.erode();           // separate connected components
+  cv.invert();
+  cv.threshold(70);     // threshold leaves just the lightest area 
+  cv.dilate();          // fill holes and smooth edges
+  cv.erode();           // separate connected components
 
 
   sineWaves = new SinOsc[numSines]; // Initialize the oscillators
@@ -76,9 +68,17 @@ void draw() {
   }
 
   ArrayList<Contour> blobs = cv.findContours();
-
+ 
   // iterate through all the blobs
   for (Contour blob : blobs) {
+    
+    float minArea = 50;
+    //float maxArea = 1280;
+    //blob.area() > maxArea
+    
+    if (blob.area() < minArea) {
+      continue;
+    }
 
     // find their contour, which is an ArrayList of points
     // try the getConvexHull() command instead – notice the difference?
@@ -123,7 +123,4 @@ void draw() {
       sineWaves[i].freq(sineFreq[i]);
     }
   }
-
-
-  //Map mouseY from 0 to 1
 }
